@@ -1,6 +1,8 @@
+"""The main bot client module."""
 import discord
 import asyncio
 from dist import token
+import wiki  # Implement this based on !wiki "search_string"
 
 bot = discord.Client()
 print(f"Current discord.py version: {discord.__version__}")
