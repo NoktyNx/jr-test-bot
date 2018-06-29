@@ -12,10 +12,8 @@ __pycache__
 env/
 build/
 develop-eggs/
-dist/
 dist.py
 main/dist.py
-config/dist.py
 downloads/
 eggs/
 .eggs/
