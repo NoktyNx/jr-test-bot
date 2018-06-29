@@ -1,0 +1,3 @@
+```
+A bot readme file.
+```

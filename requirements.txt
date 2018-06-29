@@ -1,0 +1,5 @@
+Flask==0.10.1
+requests-oauthlib==0.5.0
+https://github.com/Rapptz/discord.py/archive/master.zip#egg=discord.py[voice]
+-e .
+rm -rf jr_bot.egg-info
