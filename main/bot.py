@@ -2,7 +2,7 @@
 import discord
 import asyncio
 from dist import token
-import wiki  # Implement this based on !wiki "search_string"
+from dnd import DND
 
 bot = discord.Client()
 print(f"Current discord.py version: {discord.__version__}")
@@ -35,6 +35,9 @@ async def on_message(message):
         await client.send_message(message.channel, 'Done sleeping')
     elif message.content.startswith('!update'):
         await client.send_message(message.channel, 'Update test.')
+    elif message.content.startswith('!wiki'):
+        await client.send_message(
+        message.channel, 'Wiki search results: ')
     await bot.process_commands(message)
 
 bot.run(token)

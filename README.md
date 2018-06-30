@@ -10,7 +10,7 @@ virtualenv ~/path/to/virtualenv/different/from/local/repo
 cd ~/path/to/local/repo
 source ~/path/to/virtualenv/different/from/local/repo/bin/activate
 ```
-**NOTE:** The "/bin/" path may be "/Scripts/" depending on your OS/setup for `virtualenv`.
+**NOTE:** The `/bin/` path may be `/Scripts/` depending on your OS/setup for `virtualenv`.
   - Lastly, you'll need to create main/dist.py file and store your client token in there. There is  main/dist_example.py file demonstrating where it goes as far as configuration.
 
 
