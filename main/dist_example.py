@@ -1,5 +1,5 @@
 """""
-Dist file for holding sensitive information. Blocked from commits via .gitignore
+Dist file for holding sensitive information. Blocked from commit via .gitignore
 """
 import os
 
