@@ -24,10 +24,5 @@ Next, we need to make the bot connect and actually be able to process commands. 
 # Commands list
 **WIP**
   - **!class:**: Displays how to use the class command and the available options.
-  - **!class.Barbarian:** Displays Barbarian class information. Replace "Barbarian" with class class listed from the !class command.
-  - **!class.Barbarian.Rage:** Displays Barbarian "Rage" ability information.
-  - **!class.Barbarian.abilities:** Displays all Barbarian class abilities, i.e. "Rage" is one of the options.
-  - **!monsters** Displays how to use the monster command and the available options.
-  - **!monsters.MM:** Displays all available Monster Manual options up to 10 and prompts the user if they would like to see more.
-  - **!monsters.MM.Aarakocra:** Displays Monster Manual information for the "Aarakocra" monster.
+  - **!class Barbarian:** Displays Barbarian class information. Replace "Barbarian" with class class listed from the !class command.
   - **etc.** More commands will be documented in this matter as the DND bot is built.

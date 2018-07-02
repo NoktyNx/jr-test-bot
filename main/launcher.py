@@ -4,18 +4,19 @@ import logging
 import asyncio
 import contextlib
 from bot import DNDBot
+import dist
 
 
 @contextlib.contextmanager
-def setup_logging():
+def setup_logging():  # for future use
     # __enter__
     logging.getLogger('discord').setLevel(logging.INFO)
     logging.getLogger('discord.http').setLevel(logging.WARNING)
 
 
-def run_bot():
-    bot = DNDBot()
-    bot.run()
+def run_bot(loop):
+    bot = DNDBot(loop)
+    bot.run(dist.token)
 
 
 @click.group(invoke_without_command=True, options_metavar='[options]')
@@ -24,8 +25,7 @@ def main(ctx):
     """Launches the bot."""
     if ctx.invoked_subcommand is None:
         loop = asyncio.get_event_loop()
-        with setup_logging():
-            run_bot(loop)
+        run_bot(loop)
 
 
 if __name__ == '__main__':

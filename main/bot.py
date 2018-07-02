@@ -1,44 +1,41 @@
 """The main bot module."""
+import inspect
 import logging
 import discord
-import context
+from discord.ext import commands
 import dist
+from dnd import dnd
 
 print(f"Current discord.py version: {discord.__version__}")
-
 log = logging.getLogger(__name__)
 
 
-class DNDBot(discord.Client):  # discord.AutoShardedBot
-    def __init__(self):
-        super().__init__()
+class DNDBot(commands.Bot):
+    def __init__(self, loop):
+        super().__init__(command_prefix="!", loop=loop, token=dist.token)
 
         self.client_id = dist.client_id
-        self.token = dist.token
         self.postgresql = dist.postgresql  # future implementation
 
+        members = inspect.getmembers(dnd)
+        for name, member in members:
+            if isinstance(member, commands.Command):
+                if member.parent is None:
+                    self.add_command(member)
+
     async def on_ready(self):
-        print('Logged in.')
         print('------')
-        print(f'User: {self.user}\n')
-        print(f'ID: {self.user.id}')
+        print('Bot activated and logged in.')
         print('------')
+        print(f'Bot User: {self.user}\n')
+        print(f'Bot User ID: {self.user.id}')
 
     async def on_message(self, message):
         if message.author.bot:
             return
         await self.process_commands(message)
 
-    async def process_commands(self, message):
-        ctx = await self.get_context(message, cls=context.Context)
-
-        if ctx.command is None:
-            return
-
-        async with ctx.acquire():
-            await self.invoke(ctx)
-
 
 @property
 def config(self):
-    return __import__('config')
+    return __import__('dist')
