@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='jr-bot',
-    version='0.0.1',
+    version='0.0.2',
     description='JR Testing Bot',
     author='Joe "NoktyN" Ro',
     author_email='jromano416@gmail.com',
