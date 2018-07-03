@@ -4,7 +4,9 @@ Return responses data from the 5etools site.
 Check them out at https://5etools.com/.
 """
 import requests
+import discord
 from discord.ext import commands
+import dist
 from helpers import CLASSES
 
 
@@ -19,6 +21,46 @@ class DND(object):
         class_json_request = requests.get(
             f"https://5etools.com/data/class/class-{class_name}.json")
         return class_json_request
+
+
+@commands.group(case_insensitive=True, pass_context=True)
+async def channels(ctx):
+    """Get the list of channels from the current Discord server ("Guild")."""
+    await ctx.send(
+        'Set the main bot channel by using the command:\n'
+        '`!channels setchannel name`\n'
+        'name is the name of the channel (i.e. "general")')
+
+
+def channels_list(context):
+    """Called by other commands."""
+    channels_list = []
+    raw_channel_list = context.channel.guild.channels
+    for channel in raw_channel_list:
+        channels_list.append((channel.id, channel.name))
+    return channels_list
+
+
+@channels.command(case_insensitive=True, pass_context=True)
+async def setchannel(ctx, arg):
+    """Set the main bot channel for DND bot."""
+    channels = channels_list(ctx)
+    try:
+        for (channel_id, channel_name) in channels:
+            if channel_name == arg:
+                ctx.bot_channel = channel_id
+                import pdb; pdb.set_trace()
+                # bot_channel = discord.Object(id=bot_channel_id)
+                # await ctx.send(bot_channel, 'hello')
+                await ctx.bot_channel.send('hello')
+            else:
+                await ctx.send(
+                    f'Invalid Discord channel name specified: "{arg}"\n'
+                    'Please try again. Valid channel names detected:\n'
+                    f'{[channel[1] for channel in channels]}')
+    except commands.errors.CommandInvokeError:
+        return
+
 
 
 @commands.group(case_insensitive=True, pass_context=True)
@@ -44,6 +86,7 @@ async def class_info(ctx):
         await ctx.send(
             f'Invalid class command: {ctx.message.content}\n'
             f'Please use the !classes command to see supported class options.')
+    # discord.client.Client.get_all_channels()
     dice_count = info['class'][CLASSES[invoked_call]]['hd']['number']
     dice_faces = info['class'][CLASSES[invoked_call]]['hd']['faces']
     saving_throws = info['class'][CLASSES[invoked_call]]['proficiency']
