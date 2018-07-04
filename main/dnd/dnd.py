@@ -21,13 +21,6 @@ class DND(object):
         return class_json_request
 
 
-@commands.command(case_insensitive=True, pass_context=True)
-async def roll(ctx):
-    """Roll dice."""
-    await ctx.send(
-        "`/roll not implemented yet, but it will be in the next update.`")
-
-
 @commands.group(case_insensitive=True, pass_context=True)
 async def classes(ctx):
     """Displays the list of classes you can choose from."""
@@ -45,6 +38,9 @@ async def class_info(ctx):
     info = None
     info_dict = {}
     invoked_call = ctx.invoked_with.lower()
+    if invoked_call not in MESSAGES['supported_list']:
+        await ctx.send(
+            f'**Error:**\n```\nClass name not found: {invoked_call}')
     if invoked_call in ctx.command.aliases:
         info = DND.class_info(invoked_call).json()
     else:

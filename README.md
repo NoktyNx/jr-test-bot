@@ -19,7 +19,14 @@ First, the bot will need to join the Discord server. You can do that using the f
   - *https://discordapp.com/oauth2/authorize?client_id=CLIENT_ID&scope=bot*
   - This will open a page that allows you to select the Discord server to join based on the account you're logged into on the Discord developer page. Once the bot has joined the server, it will most likely appear offline.
 
-Next, we need to make the bot connect and actually be able to process commands. Simply open a command prompt or terminal and run the client.py script as is from this repo. The bot should connect and all of the commands should work.
+Next, we need to make the bot connect and actually be able to process commands. Simply open a command prompt or terminal and run the main/launcher.py script as is from this repo. The bot should connect and all of the commands should work. Launch commands are as follows (include the "" for the Windows command):
+**Windows (in command prompt):**
+`"~repo/directory/main/launcher.py"`
+**Mac:**
+```
+cd ~/repo/directory/main
+./launcher.py
+```
 
 # Commands list
 **WIP**
