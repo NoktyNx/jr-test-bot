@@ -15,14 +15,14 @@ source ~/path/to/virtualenv/different/from/local/repo/bin/activate
 
 
 # Starting the bot
-First, the bot will need to join the Discord server. You can do that using the following URL after creating your bot:
-  - *https://discordapp.com/oauth2/authorize?client_id=<CLIENT_ID>&scope=bot*
+First, the bot will need to join the Discord server. You can do that using the following URL after creating your bot (replace CLIENT_ID with your bot's client ID):
+  - *https://discordapp.com/oauth2/authorize?client_id=CLIENT_ID&scope=bot*
   - This will open a page that allows you to select the Discord server to join based on the account you're logged into on the Discord developer page. Once the bot has joined the server, it will most likely appear offline.
 
 Next, we need to make the bot connect and actually be able to process commands. Simply open a command prompt or terminal and run the client.py script as is from this repo. The bot should connect and all of the commands should work.
 
 # Commands list
 **WIP**
-  - **!class:**: Displays how to use the class command and the available options.
+  - **!class:** Displays how to use the class command and the available options.
   - **!class Barbarian:** Displays Barbarian class information. Replace "Barbarian" with class class listed from the !class command.
   - **etc.** More commands will be documented in this matter as the DND bot is built.

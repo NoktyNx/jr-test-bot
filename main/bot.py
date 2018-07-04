@@ -12,7 +12,8 @@ log = logging.getLogger(__name__)
 
 class DNDBot(commands.Bot):
     def __init__(self, loop):
-        super().__init__(command_prefix="!", loop=loop, token=dist.token)
+        super().__init__(command_prefix=["!", "/"], loop=loop,
+                         token=dist.token)
 
         self.client_id = dist.client_id
         self.postgresql = dist.postgresql  # future implementation
