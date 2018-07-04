@@ -5,7 +5,7 @@ Check them out at https://5etools.com/.
 """
 import requests
 from discord.ext import commands
-from helpers import CLASSES
+from helpers import MESSAGES
 
 
 class DND(object):
@@ -21,17 +21,24 @@ class DND(object):
         return class_json_request
 
 
+@commands.command(case_insensitive=True, pass_context=True)
+async def roll(ctx):
+    """Roll dice."""
+    await ctx.send(
+        "`/roll not implemented yet, but it will be in the next update.`")
+
+
 @commands.group(case_insensitive=True, pass_context=True)
 async def classes(ctx):
     """Displays the list of classes you can choose from."""
     if (len(
         ctx.message.content) <= len('!classes ') and (
             len(ctx.message.content) >= 4)):
-        await ctx.send(CLASSES['supported'])
+        await ctx.send(MESSAGES['supported'])
 
 
 @classes.command(case_insensitive=True,
-                 aliases=CLASSES['supported_list'])
+                 aliases=MESSAGES['supported_list'])
 async def class_info(ctx):
     """Class info command return for a given class."""
     # Setup
@@ -42,23 +49,39 @@ async def class_info(ctx):
         info = DND.class_info(invoked_call).json()
     else:
         await ctx.send(
+            f'```css\n'
             f'Invalid class command: {ctx.message.content}\n'
-            f'Please use the !classes command to see supported class options.')
-    dice_count = info['class'][CLASSES[invoked_call]]['hd']['number']
-    dice_faces = info['class'][CLASSES[invoked_call]]['hd']['faces']
-    saving_throws = info['class'][CLASSES[invoked_call]]['proficiency']
+            f'Please use the !classes command to see supported class '
+            f'options.\n```\n')
+    # discord.client.Client.get_all_channels()
+    dice_count = info['class'][0]['hd']['number']
+    dice_faces = info['class'][0]['hd']['faces']
+    saving_throws = info['class'][0]['proficiency']
 
     # Build info_dict from Setup.
-    info_dict['name'] = info['class'][CLASSES[invoked_call]]['name']
-    info_dict['source'] = info['class'][CLASSES[invoked_call]]['source']
+    info_dict['name'] = info['class'][0]['name']
+    info_dict['source'] = info['class'][0]['source']
     info_dict['hit_dice'] = f"{dice_count}d{dice_faces}"
     info_dict['saving_throws'] = f"{saving_throws[0]}, {saving_throws[1]}"
+    if invoked_call in ['wizard', 'sorcerer', 'monk']:
+        info_dict['armor'] = "None"
+    else:
+        info_dict['armor'] = info[
+            'class'][0]['startingProficiencies']['armor']
+    info_dict['weapons'] = info['class'][0]['startingProficiencies']['weapons']
+    info_dict['skills'] = info['class'][0]['startingProficiencies']['skills']
+    skill_choice_count = info_dict['skills']['choose']
+    skill_choices = info_dict['skills']['from']
 
     # Post built info_dict to chat.
     await ctx.send(
         f"""```md\n[{info_dict['name']}]\n"""
         f"# Source: {info_dict['source']}\n"
         f"# Hit Dice: {info_dict['hit_dice']}\n"
-        f"# Proficiencies: 1. Saving Throws: {info_dict['saving_throws']} | "
-        f"2. Something: 0\n"
-        f"```")
+        f"# Proficiencies:\n1. Saving Throws: "
+        f"{info_dict['saving_throws']} \n"
+        f"2. Armor: {info_dict['armor']}\n3. Weapons: "
+        f"{info_dict['weapons']}\n"
+        f"# Skills: Choose {skill_choice_count} skills from:\n"
+        f"# {skill_choices}\n```\n")
+    await ctx.send('```bash\n"More info to come in the future!"\n```\n')
