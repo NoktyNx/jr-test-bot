@@ -30,6 +30,16 @@ async def classes(ctx):
         await ctx.send(MESSAGES['supported'])
 
 
+@classes.error
+async def classes_error_handler(ctx, error):
+    """Local error handler for DND Bot class commands."""
+    if (isinstance(
+        error, commands.MissingRequiredArgument) or isinstance(
+            error, commands.CommandNotFound)):
+        await ctx.send(
+            f'```diff\n- Invalid command: {ctx.message.content}\n```\n')
+
+
 @classes.command(case_insensitive=True,
                  aliases=MESSAGES['supported_list'])
 async def class_info(ctx):
@@ -38,6 +48,7 @@ async def class_info(ctx):
     info = None
     info_dict = {}
     invoked_call = ctx.invoked_with.lower()
+    import pdb; pdb.set_trace()
     if invoked_call not in MESSAGES['supported_list']:
         await ctx.send(
             f'**Error:**\n```\nClass name not found: {invoked_call}')
@@ -71,13 +82,13 @@ async def class_info(ctx):
 
     # Post built info_dict to chat.
     await ctx.send(
-        f"""```md\n[{info_dict['name']}]\n"""
+        f"```md\n[{info_dict['name']}]\n"
         f"# Source: {info_dict['source']}\n"
         f"# Hit Dice: {info_dict['hit_dice']}\n"
         f"# Proficiencies:\n1. Saving Throws: "
         f"{info_dict['saving_throws']} \n"
         f"2. Armor: {info_dict['armor']}\n3. Weapons: "
         f"{info_dict['weapons']}\n"
-        f"# Skills: Choose {skill_choice_count} skills from:\n"
+        f"# Skills - Choose {skill_choice_count} skills from:\n"
         f"# {skill_choices}\n```\n")
     await ctx.send('```bash\n"More info to come in the future!"\n```\n')
