@@ -5,6 +5,7 @@ import discord
 from discord.ext import commands
 import dist
 from dnd import dnd
+from roller import roller
 
 print(f"Current discord.py version: {discord.__version__}")
 log = logging.getLogger(__name__)
@@ -18,8 +19,14 @@ class DNDBot(commands.Bot):
         self.client_id = dist.client_id
         self.postgresql = dist.postgresql  # future implementation
 
-        members = inspect.getmembers(dnd)
-        for name, member in members:
+        dnd_members = inspect.getmembers(dnd)
+        for name, member in dnd_members:
+            if isinstance(member, commands.Command):
+                if member.parent is None:
+                    self.add_command(member)
+
+        roller_members = inspect.getmembers(roller)
+        for name, member in roller_members:
             if isinstance(member, commands.Command):
                 if member.parent is None:
                     self.add_command(member)

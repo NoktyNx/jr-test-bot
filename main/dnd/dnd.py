@@ -21,13 +21,6 @@ class DND(object):
         return class_json_request
 
 
-@commands.command(case_insensitive=True, pass_context=True)
-async def roll(ctx):
-    """Roll dice."""
-    await ctx.send(
-        "`/roll not implemented yet, but it will be in the next update.`")
-
-
 @commands.group(case_insensitive=True, pass_context=True)
 async def classes(ctx):
     """Displays the list of classes you can choose from."""
@@ -35,6 +28,10 @@ async def classes(ctx):
         ctx.message.content) <= len('!classes ') and (
             len(ctx.message.content) >= 4)):
         await ctx.send(MESSAGES['supported'])
+    if ctx.message.content.split(
+            '!classes ')[1].lower() not in MESSAGES['supported_list']:
+        await ctx.send(MESSAGES['class_not_found'].format(
+            ctx.message.content.split('!classes ')[1].lower()))
 
 
 @classes.command(case_insensitive=True,
@@ -47,13 +44,6 @@ async def class_info(ctx):
     invoked_call = ctx.invoked_with.lower()
     if invoked_call in ctx.command.aliases:
         info = DND.class_info(invoked_call).json()
-    else:
-        await ctx.send(
-            f'```css\n'
-            f'Invalid class command: {ctx.message.content}\n'
-            f'Please use the !classes command to see supported class '
-            f'options.\n```\n')
-    # discord.client.Client.get_all_channels()
     dice_count = info['class'][0]['hd']['number']
     dice_faces = info['class'][0]['hd']['faces']
     saving_throws = info['class'][0]['proficiency']
@@ -75,13 +65,13 @@ async def class_info(ctx):
 
     # Post built info_dict to chat.
     await ctx.send(
-        f"""```md\n[{info_dict['name']}]\n"""
+        f"```md\n[{info_dict['name']}]\n"
         f"# Source: {info_dict['source']}\n"
         f"# Hit Dice: {info_dict['hit_dice']}\n"
         f"# Proficiencies:\n1. Saving Throws: "
         f"{info_dict['saving_throws']} \n"
         f"2. Armor: {info_dict['armor']}\n3. Weapons: "
         f"{info_dict['weapons']}\n"
-        f"# Skills: Choose {skill_choice_count} skills from:\n"
+        f"# Skills - Choose {skill_choice_count} skills from:\n"
         f"# {skill_choices}\n```\n")
     await ctx.send('```bash\n"More info to come in the future!"\n```\n')
