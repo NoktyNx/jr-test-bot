@@ -11,6 +11,10 @@ MESSAGES = {
     'supported_list': [
         'barbarian', 'bard', 'cleric', 'druid', 'fighter', 'monk', 'mystic',
         'paladin', 'ranger', 'rogue', 'sorcerer', 'warlock', 'wizard'],
+    'class_not_found':
+        '```diff\n- Error: D&D class name not found: '
+        '"{0}"\n'
+        '+ Use !classes to see a list of valid class choices.\n```\n',
 }
 
 

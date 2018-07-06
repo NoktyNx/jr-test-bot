@@ -28,16 +28,10 @@ async def classes(ctx):
         ctx.message.content) <= len('!classes ') and (
             len(ctx.message.content) >= 4)):
         await ctx.send(MESSAGES['supported'])
-
-
-@classes.error
-async def classes_error_handler(ctx, error):
-    """Local error handler for DND Bot class commands."""
-    if (isinstance(
-        error, commands.MissingRequiredArgument) or isinstance(
-            error, commands.CommandNotFound)):
-        await ctx.send(
-            f'```diff\n- Invalid command: {ctx.message.content}\n```\n')
+    if ctx.message.content.split(
+            '!classes ')[1].lower() not in MESSAGES['supported_list']:
+        await ctx.send(MESSAGES['class_not_found'].format(
+            ctx.message.content.split('!classes ')[1].lower()))
 
 
 @classes.command(case_insensitive=True,
@@ -48,19 +42,8 @@ async def class_info(ctx):
     info = None
     info_dict = {}
     invoked_call = ctx.invoked_with.lower()
-    import pdb; pdb.set_trace()
-    if invoked_call not in MESSAGES['supported_list']:
-        await ctx.send(
-            f'**Error:**\n```\nClass name not found: {invoked_call}')
     if invoked_call in ctx.command.aliases:
         info = DND.class_info(invoked_call).json()
-    else:
-        await ctx.send(
-            f'```css\n'
-            f'Invalid class command: {ctx.message.content}\n'
-            f'Please use the !classes command to see supported class '
-            f'options.\n```\n')
-    # discord.client.Client.get_all_channels()
     dice_count = info['class'][0]['hd']['number']
     dice_faces = info['class'][0]['hd']['faces']
     saving_throws = info['class'][0]['proficiency']
