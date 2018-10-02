@@ -5,7 +5,7 @@ import discord
 from discord.ext import commands
 import dist
 from dnd import dnd
-from roller import roller
+from roller import commands as roller_commands
 
 print(f"Current discord.py version: {discord.__version__}")
 log = logging.getLogger(__name__)
@@ -13,7 +13,7 @@ log = logging.getLogger(__name__)
 
 class DNDBot(commands.Bot):
     def __init__(self, loop):
-        super().__init__(command_prefix=["!", "/"], loop=loop,
+        super().__init__(command_prefix=["!", "/", "."], loop=loop,
                          token=dist.token)
 
         self.client_id = dist.client_id
@@ -25,7 +25,7 @@ class DNDBot(commands.Bot):
                 if member.parent is None:
                     self.add_command(member)
 
-        roller_members = inspect.getmembers(roller)
+        roller_members = inspect.getmembers(roller_commands)
         for name, member in roller_members:
             if isinstance(member, commands.Command):
                 if member.parent is None:

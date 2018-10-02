@@ -17,6 +17,15 @@ MESSAGES = {
         '+ Use !classes to see a list of valid class choices.\n```\n',
 }
 
+BLOOD_BOWL = {
+    1: '<:push_back:496487887961849876>',
+    2: '<:defender_stumbles:496487888041541653>',
+    3: '<:attacker_down:496487887915843603>',
+    4: '<:both_down:496487888075227156>',
+    5: '<:defender_down:496487887987146753>',
+    6: '<:push_back:496487887961849876>',
+}
+
 ICON_URL = {
     'main_logo': 'https://i.imgur.com/xJcDRHb.png',
     'dice_roller': 'https://i.imgur.com/tR21xI6.png',
@@ -62,5 +71,6 @@ ROLLER_MESSAGES = {
     'invalid_roll':
         '```diff\n- Roll command invalid: "/roll {0}"\n'
         '+ Please try again.\n'
-        '[Current limit for dice sides is 100]\n```\n'
+        '[Current limit for dice sides is 100]\n'
+        '[Blood Bowl block dice limit is 3dblock.]```\n'
 }
