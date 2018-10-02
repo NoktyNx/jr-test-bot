@@ -8,19 +8,87 @@ Can do other rolls such as 1d20, 1d100, etc.
 
 Also supports "bonuses" for rolls such as "1d6+50" where "+50" is the bonus
 Can also do negative "penalties" the same way.
+
+New: Users can now input "/roll 1dblock" to roll Blood Bowl block dice from
+the Blood Bowl tabletop / video games. Obviously can increase the amount by
+adding dice such as: "/roll 2dblock" or "/roll 3dblock"
 """
 
 import random
 import re
 import discord
-from discord.ext import commands
-from helpers import ICON_URL, ROLLER_MESSAGES, class_colors
+from helpers import BLOOD_BOWL, ICON_URL, class_colors
 
 
 class DiceRoller(object):
     """Handles the dice rolls."""
-    def parse_roll(roll_arg: str, roll_bonus: bool):
+    blood_bowl_roll = False
+
+    def __generate_roll_results(dice_count, dice_sides):
+        """Generate the roll results."""
+        dice_list = []
+        for dice in range(0, dice_count):
+            dice = random.randint(1, dice_sides)
+            dice_list.append(dice)
+        return dice_list
+
+    def __generate_individual_rolls(roll_results):
+        """Generate individual dice roll counts."""
+        dice_list = []
+        for dice in roll_results:
+            unique_dice = str(dice)
+            dice_count = f"{roll_results.count(dice)}"
+            if f"{unique_dice} ({dice_count})" not in dice_list:
+                dice_list.append(f"{unique_dice} ({dice_count})")
+        dice_list.sort(reverse=True)
+        return dice_list
+
+    def discord_embed(ctx, dice_count, dice_sides, splitter, dice_bonus_string,
+                      rolled_dice, individual_dice_rolls):
+        """Generate the embed message for Discord."""
+        emoji_string = ""
+        if DiceRoller.blood_bowl_roll:
+            embed = discord.Embed(
+                title='Results', description="----------------",
+                colour=class_colors['dice_roller'])
+            embed.set_author(
+                name=(
+                    f"{ctx.message.author} rolled "
+                    f"{dice_count} block dice."),
+                icon_url=ctx.author.avatar_url)
+            embed.set_thumbnail(url=f"{ICON_URL['dice_roller']}")
+            for result in rolled_dice['roll_results']:
+                emoji_string += f' {BLOOD_BOWL[result]}'
+            embed.add_field(
+                name='Dice', value=emoji_string)
+        else:
+            embed = discord.Embed(
+                title="Results", description="----------------",
+                colour=class_colors['dice_roller'])
+            embed.set_author(
+                name=(
+                    f"{ctx.message.author} rolled "
+                    f"{dice_count}d{dice_sides}{splitter}{dice_bonus_string}"),
+                icon_url=ctx.author.avatar_url)
+            embed.set_thumbnail(url=f"{ICON_URL['dice_roller']}")
+            embed.add_field(
+                name=f"Total (including bonus)",
+                value=f"{rolled_dice['total']}",
+                inline=True)
+            embed.add_field(
+                name="Individual Dice Rolls",
+                value=f"{individual_dice_rolls}", inline=True)
+        return embed
+
+    def parse_roll(roll_arg: str, roll_bonus=False):
         """Return a parsed regex object for doing a valid dice roll."""
+        # Blood Bowl dice rolls.
+        if 'block' in str(roll_arg):
+            roll_string = re.search(r'^[123]d(block)', roll_arg)
+            DiceRoller.blood_bowl_roll = True
+            return roll_string
+
+        # Normal dice rolls.
         if roll_bonus:
             roll_string = re.search(
                 r'^[\d*]{1,3}d[\d*]{1,3}[\+-][\d*]{1,3}$', roll_arg)
@@ -28,12 +96,14 @@ class DiceRoller(object):
             roll_string = re.search(r'^[(\d*)]{1,3}d[\d*]{1,3}$', roll_arg)
         return roll_string
 
-    def roll_dice(dice_count: int, dice_sides: int, bonus: int, splitter: str):
+    def roll_dice(dice_count: int, dice_sides: int, bonus: int,
+                  splitter: str):
         """Roll a dice for a random outcome.
 
         rolled_dice is the returned dict.
         number_of_dice int: represents how many dice to roll.
-        dice_sides int: represents how many sides on each die rolled.
+        dice_sides int: represents how many sides on each die rolled. Gets
+            typecast to a string if a Blood Bowl dice roll is made.
         bonus int: represents how much to add/subtract from the roll.
         splitter string: denotes whether the bonus will be added or subtracted.
         """
@@ -43,73 +113,18 @@ class DiceRoller(object):
             'total': 0,
             'bonus': 0,
         }
-        for dice in range(0, dice_count):
-            dice = random.randint(1, dice_sides)
-            rolled_dice['roll_results'].append(dice)
-        for dice in rolled_dice['roll_results']:
-            unique_dice = str(dice)
-            dice_count = f"{rolled_dice['roll_results'].count(dice)}"
-            if f"{unique_dice} ({dice_count})" not in rolled_dice[
-               'individual_rolls']:
-                rolled_dice['individual_rolls'].append(
-                    f"{unique_dice} ({dice_count})")
-        rolled_dice['individual_rolls'].sort(reverse=True)
+
+        rolled_dice['roll_results'] = DiceRoller.__generate_roll_results(
+            dice_count, dice_sides)
+        rolled_dice[
+            'individual_rolls'] = DiceRoller.__generate_individual_rolls(
+                rolled_dice['roll_results'])
         unmodified_total = rolled_dice['total'] = int(sum(
             rolled_dice['roll_results']))
+
         if splitter == "+":
             rolled_dice['total'] = int(unmodified_total + bonus)
         elif splitter == "-":
             rolled_dice['total'] = int(unmodified_total - bonus)
         rolled_dice['bonus'] = bonus
         return rolled_dice
-
-
-@commands.command(case_insensitive=True, pass_context=True)
-async def roll(ctx, arg):
-    """Roll dice."""
-    # Setup, fail message if invalid.
-    roll_message = await ctx.send("```diff\n+ ROLLING...\n```")
-    updated_arg = arg.lower()
-    roll_bonus = '-' in updated_arg or '+' in updated_arg
-    roll_string = DiceRoller.parse_roll(updated_arg, roll_bonus)
-    try:
-        valid_roll = roll_string.string
-        splitter = ''
-        if '-' in valid_roll:
-            splitter = '-'
-        elif '+' in valid_roll:
-            splitter = '+'
-        dice_count = int(valid_roll.split('d')[0])
-        if roll_bonus:
-            dice_sides = int(valid_roll.split('d')[1].split(splitter)[0])
-            dice_bonus = int(valid_roll.split('d')[1].split(splitter)[1])
-        else:
-            dice_sides = int(valid_roll.split('d')[1])
-            dice_bonus = 0
-        if dice_sides >= 101:
-            raise AttributeError
-        rolled_dice = DiceRoller.roll_dice(
-            dice_count, dice_sides, dice_bonus, splitter)
-        individual_dice_rolls = ", ".join(rolled_dice['individual_rolls'])
-        if dice_bonus >= 1:
-            dice_bonus_string = dice_bonus
-        else:
-            dice_bonus_string = ""
-        embed = discord.Embed(
-            title="Results", description="----------------",
-            colour=class_colors['dice_roller'])
-        embed.set_author(
-            name=(f"{ctx.message.author} rolled "
-                  f"{dice_count}d{dice_sides}{splitter}{dice_bonus_string}"),
-            icon_url=f"{ICON_URL['main_logo']}")
-        embed.set_thumbnail(url=f"{ICON_URL['dice_roller']}")
-        embed.add_field(
-            name=f"Total (including bonus)", value=f"{rolled_dice['total']}",
-            inline=True)
-        embed.add_field(
-            name="Individual Dice Rolls",
-            value=f"{individual_dice_rolls}", inline=True)
-        await roll_message.edit(content="", embed=embed)
-    except AttributeError:
-        await roll_message.delete()
-        await ctx.send(ROLLER_MESSAGES['invalid_roll'].format(arg))

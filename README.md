@@ -33,4 +33,5 @@ Next, we need to make the bot connect and actually be able to process commands. 
   - **!classes:** Displays how to use the class command and the available options.
   - **!classes Barbarian:** Displays Barbarian class information. Replace "Barbarian" with class class listed from the !class command.
   - **/roll:** Enables the rolling of dice. Example: "/roll 1d6" rolls one six sided dice.
+  - **/roll 1dblock:** Roll 1 Blood Bowl block dice. Replace "1" with the desired amount.
   - **etc.** More commands will be documented in this matter as the DND bot is built.
