@@ -61,6 +61,7 @@ class DiceRoller(object):
                 emoji_string += f' {BLOOD_BOWL[result]}'
             embed.add_field(
                 name='Dice', value=emoji_string)
+            DiceRoller.blood_bowl_roll = False
         else:
             embed = discord.Embed(
                 title="Results", description="----------------",
