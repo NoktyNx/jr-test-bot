@@ -36,6 +36,15 @@ DESCRIPTIONS = {
     'broken_neck': 'Loses 1 point in Agility.',
     'smashed_collar_bone': 'Loses 1 point in Strength.',
     'dead': 'The player is dead; he is permanently removed from the team.',
+    'stunned':
+        'The player is knocked down. He will be unable to stand up until '
+        'the next turn at a cost of 3 Movement points.',
+    'ko':
+        'The player leaves the pitch and ends up in the pit. On the next play '
+        'there is one chance in two that he can go back on the pitch.',
+    'casualty':
+        'The player leaves the pitch for the rest of the match. He may miss '
+        'the next match, lose statistic points and even die!'
 }
 
 INJURY_IMAGES = {
@@ -54,17 +63,17 @@ BLOOD_BOWL = {
 }
 
 BLOOD_BOWL_INJURIES = {
-    2: 'Stunned',
-    3: 'Stunned',
-    4: 'Stunned',
-    5: 'Stunned',
-    6: 'Stunned',
-    7: 'Stunned',
-    8: 'KO',
-    9: 'KO',
-    10: 'Casualty',
-    11: 'Casualty',
-    12: 'Casualty',
+    2: f"Stunned: {DESCRIPTIONS['stunned']}",
+    3: f"Stunned: {DESCRIPTIONS['stunned']}",
+    4: f"Stunned: {DESCRIPTIONS['stunned']}",
+    5: f"Stunned: {DESCRIPTIONS['stunned']}",
+    6: f"Stunned: {DESCRIPTIONS['stunned']}",
+    7: f"Stunned: {DESCRIPTIONS['stunned']}",
+    8: f"KO: {DESCRIPTIONS['ko']}",
+    9: f"KO: {DESCRIPTIONS['ko']}",
+    10: f"Casualty: {DESCRIPTIONS['casualty']}",
+    11: f"Casualty: {DESCRIPTIONS['casualty']}",
+    12: f"Casualty: {DESCRIPTIONS['casualty']}",
 }
 
 BLOOD_BOWL_CASUALTIES = {

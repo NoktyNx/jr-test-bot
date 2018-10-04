@@ -86,7 +86,7 @@ class DiceRoller(object):
         """Generate the Blood Bowl injury embed message for Discord."""
         casualty_string = ""
         if injury_result['casualty']:
-            casualty_string = ", rolling casualty result."
+            casualty_string = " Rolling casualty result."
         embed = discord.Embed(
             title='Injury Roll', description="----------------",
             colour=class_colors['dice_roller'])
