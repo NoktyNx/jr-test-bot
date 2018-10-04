@@ -4,6 +4,11 @@ from roller.roller import DiceRoller
 from helpers import ROLLER_MESSAGES
 
 
+class Injury(Exception):
+    """Custom exception to exit async def roll()"""
+    pass
+
+
 @commands.command(case_insensitive=True, pass_context=True)
 async def roll(ctx, arg):
     """Roll dice."""
@@ -15,6 +20,14 @@ async def roll(ctx, arg):
 
     try:
         valid_roll = roll_string.string
+
+        # If this roll is an injury roll, return after and end:
+        if valid_roll == 'injury':
+            injury_result = DiceRoller.generate_injury()
+            embed = DiceRoller.injury_embed(ctx, injury_result)
+            await roll_message.edit(content="", embed=embed)
+            raise Injury
+
         dice_sides = 6
         dice_bonus = ''
         splitter = ''
@@ -52,3 +65,6 @@ async def roll(ctx, arg):
     except AttributeError:
         await roll_message.delete()
         await ctx.send(ROLLER_MESSAGES['invalid_roll'].format(arg))
+    except Injury:
+        # Custom Exception to exit this async method.
+        pass

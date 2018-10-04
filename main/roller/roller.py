@@ -17,7 +17,9 @@ adding dice such as: "/roll 2dblock" or "/roll 3dblock"
 import random
 import re
 import discord
-from helpers import BLOOD_BOWL, ICON_URL, class_colors
+from helpers import (
+    BLOOD_BOWL, BLOOD_BOWL_CASUALTIES, BLOOD_BOWL_INJURIES, DESCRIPTIONS,
+    ICON_URL, INJURY_IMAGES, class_colors)
 
 
 class DiceRoller(object):
@@ -49,12 +51,11 @@ class DiceRoller(object):
         emoji_string = ""
         if DiceRoller.blood_bowl_roll:
             embed = discord.Embed(
-                title='Results', description="----------------",
+                title='Block Rolls', description="----------------",
                 colour=class_colors['dice_roller'])
             embed.set_author(
-                name=(
-                    f"{ctx.message.author} rolled "
-                    f"{dice_count} block dice."),
+                name=(f"{ctx.message.author} rolled "
+                      f"{dice_count} block dice."),
                 icon_url=ctx.author.avatar_url)
             embed.set_thumbnail(url=f"{ICON_URL['dice_roller']}")
             for result in rolled_dice['roll_results']:
@@ -64,7 +65,7 @@ class DiceRoller(object):
             DiceRoller.blood_bowl_roll = False
         else:
             embed = discord.Embed(
-                title="Results", description="----------------",
+                title="Dice Rolls", description="----------------",
                 colour=class_colors['dice_roller'])
             embed.set_author(
                 name=(
@@ -81,12 +82,54 @@ class DiceRoller(object):
                 value=f"{individual_dice_rolls}", inline=True)
         return embed
 
+    def injury_embed(ctx, injury_result):
+        """Generate the Blood Bowl injury embed message for Discord."""
+        casualty_string = ""
+        if injury_result['casualty']:
+            casualty_string = ", rolling casualty result."
+        embed = discord.Embed(
+            title='Injury Roll', description="----------------",
+            colour=class_colors['dice_roller'])
+        embed.set_author(
+            name=f"{ctx.message.author} rolled 2d6 injury dice.",
+            icon_url=ctx.author.avatar_url)
+        embed.set_thumbnail(url=f"{ICON_URL['dice_roller']}")
+        embed.set_image(
+            url=INJURY_IMAGES[injury_result['injury']])
+        embed.add_field(
+            name='Roll result',
+            value=f"2d6 {injury_result['roll_results']}: "
+                  f'"{injury_result["total"]}" total - Result: '
+                  f"{injury_result['injury']}{casualty_string}")
+        if casualty_string:
+            embed.add_field(
+                name='Casualty roll',
+                value=f'1d6 (first digit): "{injury_result["d6"]}" \n'
+                      f'1d8 (second digit): "{injury_result["d8"]}"\n'
+                      f'Total: "{injury_result["d6"]}{injury_result["d8"]}"')
+            embed.add_field(
+                name='Result',
+                value=f"{injury_result['casualty'][0]}: "
+                      f"{injury_result['casualty'][1]}")
+        else:
+            embed.add_field(
+                name='No casualty roll',
+                value='Must roll a "Casualty" injury result for a casualty '
+                      'roll.')
+        return embed
+
     def parse_roll(roll_arg: str, roll_bonus=False):
         """Return a parsed regex object for doing a valid dice roll."""
-        # Blood Bowl dice rolls.
+        # Blood Bowl block dice rolls.
         if 'block' in str(roll_arg):
             roll_string = re.search(r'^[123]d(block)', roll_arg)
             DiceRoller.blood_bowl_roll = True
+            return roll_string
+
+        # Blood Bowl injury dice rolls.
+        elif 'injury' in str(roll_arg):
+            updated_arg = roll_arg[:6]
+            roll_string = re.search(r'^(injury)', updated_arg)
             return roll_string
 
         # Normal dice rolls.
@@ -129,3 +172,45 @@ class DiceRoller(object):
             rolled_dice['total'] = int(unmodified_total - bonus)
         rolled_dice['bonus'] = bonus
         return rolled_dice
+
+    def generate_injury():
+        """Roll on the Blood Bowl injury and (possibly) casualty tables."""
+        injury_result = DiceRoller.roll_injury(2, 6)
+        injury_result['injury'] = BLOOD_BOWL_INJURIES[injury_result['total']]
+        if injury_result['injury'] == 'Casualty':
+            casualty_result = DiceRoller.roll_casualty()
+            injury_result['casualty'] = BLOOD_BOWL_CASUALTIES[
+                casualty_result['result']]
+            injury_result['d6'] = casualty_result['d6']
+            injury_result['d8'] = casualty_result['d8']
+        return injury_result
+
+    def roll_injury(dice_count: int, dice_sides: int):
+        """Roll the Blood Bowl injury results."""
+        injury_result = {
+            'roll_results': [],
+            'total': 0,
+            'injury': '',
+            'casualty': '',
+            'd6': '',
+            'd8': '',
+        }
+
+        injury_result['roll_results'] = DiceRoller.__generate_roll_results(
+            dice_count, dice_sides)
+        injury_result['total'] = int(sum(injury_result['roll_results']))
+        return injury_result
+
+    def roll_casualty():
+        """Roll the Blood Bowl casualty results."""
+        casualty_result = {
+            'result': '',
+            'd6': 0,
+            'd8': 0,
+        }
+        first_digit = random.randint(1, 6)
+        second_digit = random.randint(1, 8)
+        casualty_result['result'] = int(f'{first_digit}{second_digit}')
+        casualty_result['d6'] = first_digit
+        casualty_result['d8'] = second_digit
+        return casualty_result
