@@ -48,9 +48,9 @@ DESCRIPTIONS = {
 }
 
 INJURY_IMAGES = {
-    'Stunned': 'https://i.imgur.com/d6cqzLT.png',
-    'KO': 'https://i.imgur.com/3M7zedR.png',
-    'Casualty': 'https://i.imgur.com/o9IO05y.png',
+    f"Stunned: {DESCRIPTIONS['stunned']}": 'https://i.imgur.com/d6cqzLT.png',
+    f"KO: {DESCRIPTIONS['ko']}": 'https://i.imgur.com/3M7zedR.png',
+    f"Casualty: {DESCRIPTIONS['casualty']}": 'https://i.imgur.com/o9IO05y.png',
 }
 
 BLOOD_BOWL = {
