@@ -177,7 +177,7 @@ class DiceRoller(object):
         """Roll on the Blood Bowl injury and (possibly) casualty tables."""
         injury_result = DiceRoller.roll_injury(2, 6)
         injury_result['injury'] = BLOOD_BOWL_INJURIES[injury_result['total']]
-        if injury_result['injury'] == 'Casualty':
+        if 'Casualty' in injury_result['injury']:
             casualty_result = DiceRoller.roll_casualty()
             injury_result['casualty'] = BLOOD_BOWL_CASUALTIES[
                 casualty_result['result']]
